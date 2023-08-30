@@ -4,7 +4,6 @@ import com.sk89q.worldguard.bukkit.event.block.UseBlockEvent;
 import com.sk89q.worldguard.bukkit.event.entity.DamageEntityEvent;
 import com.sk89q.worldguard.bukkit.event.entity.UseEntityEvent;
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
-import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -13,7 +12,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.codemc.worldguardwrapper.event.*;
 
-@NoArgsConstructor
 public class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)

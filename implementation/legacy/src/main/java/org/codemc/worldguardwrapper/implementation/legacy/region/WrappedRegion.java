@@ -5,8 +5,6 @@ import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.codemc.worldguardwrapper.flag.IWrappedFlag;
@@ -22,12 +20,15 @@ import org.codemc.worldguardwrapper.selection.ISelection;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
-@Getter
 public class WrappedRegion implements IWrappedRegion {
 
     private final World world;
     private final ProtectedRegion handle;
+
+    public WrappedRegion(World world, ProtectedRegion handle) {
+        this.world = world;
+        this.handle = handle;
+    }
 
     @Override
     public ISelection getSelection() {
@@ -185,6 +186,14 @@ public class WrappedRegion implements IWrappedRegion {
     @Override
     public boolean contains(Location location) {
         return handle.contains(WorldGuardVectorUtilities.toBlockVector(location));
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public ProtectedRegion getHandle() {
+        return handle;
     }
 
 }

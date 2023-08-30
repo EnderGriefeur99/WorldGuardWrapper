@@ -1,66 +1,138 @@
 package org.codemc.worldguardwrapper;
 
-import lombok.experimental.Delegate;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.codemc.worldguardwrapper.flag.IWrappedFlag;
+import org.codemc.worldguardwrapper.handler.IHandler;
 import org.codemc.worldguardwrapper.implementation.IWorldGuardImplementation;
+import org.codemc.worldguardwrapper.implementation.v6.WorldGuardImplementation;
+import org.codemc.worldguardwrapper.implementation.v6.event.EventListener;
+import org.codemc.worldguardwrapper.region.IWrappedRegion;
+import org.codemc.worldguardwrapper.region.IWrappedRegionSet;
+import org.codemc.worldguardwrapper.selection.ISelection;
 
-
-@SuppressWarnings("unused")
 public class WorldGuardWrapper implements IWorldGuardImplementation {
+   private static WorldGuardWrapper instance;
+   private final IWorldGuardImplementation implementation;
+   private final Listener listener;
 
-    private static WorldGuardWrapper instance;
+   public static WorldGuardWrapper getInstance() {
+      if (instance == null) {
+         instance = new WorldGuardWrapper();
+      }
 
-    /**
-     * Returns the wrapper singleton instance.
-     *
-     * @return the wrapper singleton
-     */
-    public static WorldGuardWrapper getInstance() {
-        if (instance == null) {
-            instance = new WorldGuardWrapper();
-        }
-        return instance;
-    }
+      return instance;
+   }
 
-    @Delegate
-    private final IWorldGuardImplementation implementation;
-    private final Listener listener;
+   private WorldGuardWrapper() {
+      byte targetVersion;
+      try {
+         Class.forName("com.sk89q.worldguard.WorldGuard");
+         targetVersion = 7;
+      } catch (ClassNotFoundException var5) {
+         try {
+            Class.forName("com.sk89q.worldguard.protection.flags.registry.FlagRegistry");
+            targetVersion = 6;
+         } catch (ClassNotFoundException var4) {
+            targetVersion = -6;
+         }
+      }
 
-    private WorldGuardWrapper() {
-        int targetVersion;
-        try {
-            Class.forName("com.sk89q.worldguard.WorldGuard");
-            targetVersion = 7;
-        } catch (ClassNotFoundException e) {
-            try {
-                Class.forName("com.sk89q.worldguard.protection.flags.registry.FlagRegistry");
-                targetVersion = 6;
-            } catch (ClassNotFoundException e1) {
-                targetVersion = -6;
-            }
-        }
-        if (targetVersion == 6) {
-            implementation = new org.codemc.worldguardwrapper.implementation.v6.WorldGuardImplementation();
-            listener = new org.codemc.worldguardwrapper.implementation.v6.event.EventListener();
-        } else if (targetVersion == -6) {
-            implementation = new org.codemc.worldguardwrapper.implementation.legacy.WorldGuardImplementation();
-            listener = new org.codemc.worldguardwrapper.implementation.legacy.event.EventListener();
-        } else {
-            implementation = new org.codemc.worldguardwrapper.implementation.v7.WorldGuardImplementation();
-            listener = new org.codemc.worldguardwrapper.implementation.v7.event.EventListener();
-        }
-    }
+      if (targetVersion == 6) {
+         this.implementation = new WorldGuardImplementation();
+         this.listener = new EventListener();
+      } else if (targetVersion == -6) {
+         this.implementation = new org.codemc.worldguardwrapper.implementation.legacy.WorldGuardImplementation();
+         this.listener = new org.codemc.worldguardwrapper.implementation.legacy.event.EventListener();
+      } else {
+         this.implementation = new org.codemc.worldguardwrapper.implementation.v7.WorldGuardImplementation();
+         this.listener = new org.codemc.worldguardwrapper.implementation.v7.event.EventListener();
+      }
 
-    /**
-     * Forward WorldGuard event calls to wrapped events to allow listening to them
-     * without having to use WorldGuard's events. This is optional.
-     *
-     * @param plugin the plugin instance
-     */
-    public void registerEvents(JavaPlugin plugin) {
-        Bukkit.getPluginManager().registerEvents(listener, plugin);
-    }
+   }
 
+   public void registerEvents(JavaPlugin plugin) {
+      Bukkit.getPluginManager().registerEvents(this.listener, plugin);
+   }
+
+   public JavaPlugin getWorldGuardPlugin() {
+      return this.implementation.getWorldGuardPlugin();
+   }
+
+   public int getApiVersion() {
+      return this.implementation.getApiVersion();
+   }
+
+   public void registerHandler(Supplier<IHandler> arg0) {
+      this.implementation.registerHandler(arg0);
+   }
+
+   public <T> Optional<T> queryFlag(Player arg0, Location arg1, IWrappedFlag<T> arg2) {
+      return this.implementation.queryFlag(arg0, arg1, arg2);
+   }
+
+   public Map<IWrappedFlag<?>, Object> queryApplicableFlags(Player arg0, Location arg1) {
+      return this.implementation.queryApplicableFlags(arg0, arg1);
+   }
+
+   public <T> Optional<IWrappedFlag<T>> getFlag(String arg0, Class<T> arg1) {
+      return this.implementation.getFlag(arg0, arg1);
+   }
+
+   public <T> Optional<IWrappedFlag<T>> registerFlag(String arg0, Class<T> arg1, T arg2) {
+      return this.implementation.registerFlag(arg0, arg1, arg2);
+   }
+
+   public <T> Optional<IWrappedFlag<T>> registerFlag(String name, Class<T> type) {
+      return this.implementation.registerFlag(name, type);
+   }
+
+   public Optional<IWrappedRegion> getRegion(World arg0, String arg1) {
+      return this.implementation.getRegion(arg0, arg1);
+   }
+
+   public Map<String, IWrappedRegion> getRegions(World arg0) {
+      return this.implementation.getRegions(arg0);
+   }
+
+   public Set<IWrappedRegion> getRegions(Location arg0) {
+      return this.implementation.getRegions(arg0);
+   }
+
+   public Set<IWrappedRegion> getRegions(Location arg0, Location arg1) {
+      return this.implementation.getRegions(arg0, arg1);
+   }
+
+   public Optional<IWrappedRegionSet> getRegionSet(Location arg0) {
+      return this.implementation.getRegionSet(arg0);
+   }
+
+   public Optional<IWrappedRegion> addRegion(String arg0, List<Location> arg1, int arg2, int arg3) {
+      return this.implementation.addRegion(arg0, arg1, arg2, arg3);
+   }
+
+   public Optional<IWrappedRegion> addCuboidRegion(String id, Location point1, Location point2) {
+      return this.implementation.addCuboidRegion(id, point1, point2);
+   }
+
+   public Optional<IWrappedRegion> addRegion(String id, ISelection selection) {
+      return this.implementation.addRegion(id, selection);
+   }
+
+   public Optional<Set<IWrappedRegion>> removeRegion(World arg0, String arg1) {
+      return this.implementation.removeRegion(arg0, arg1);
+   }
+
+   public Optional<ISelection> getPlayerSelection(Player arg0) {
+      return this.implementation.getPlayerSelection(arg0);
+   }
 }

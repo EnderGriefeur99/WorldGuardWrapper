@@ -1,17 +1,17 @@
 package org.codemc.worldguardwrapper.implementation.v7.flag;
 
 import com.sk89q.worldguard.protection.flags.Flag;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.codemc.worldguardwrapper.flag.IWrappedFlag;
 
 import java.util.Optional;
 
-@AllArgsConstructor
-@Getter
 public abstract class AbstractWrappedFlag<T> implements IWrappedFlag<T> {
 
     private final Flag<?> handle;
+
+    public AbstractWrappedFlag(Flag<?> handle) {
+        this.handle = handle;
+    }
 
     @Override
     public String getName() {
@@ -26,5 +26,9 @@ public abstract class AbstractWrappedFlag<T> implements IWrappedFlag<T> {
     public Optional<T> getDefaultValue() {
         return fromWGValue(handle.getDefault());
     }
+
+	public Flag<?> getHandle() {
+		return handle;
+	}
 
 }

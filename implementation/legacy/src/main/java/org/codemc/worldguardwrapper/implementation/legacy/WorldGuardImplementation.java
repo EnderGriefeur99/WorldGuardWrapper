@@ -15,7 +15,6 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import lombok.NonNull;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
@@ -57,16 +56,16 @@ public class WorldGuardImplementation implements IWorldGuardImplementation {
                 worldGuardPlugin.wrapPlayer((Player) bukkitPlayer) : worldGuardPlugin.wrapOfflinePlayer(bukkitPlayer));
     }
 
-    private Optional<RegionManager> getWorldManager(@NonNull World world) {
+    private Optional<RegionManager> getWorldManager(World world) {
         return Optional.ofNullable(worldGuardPlugin.getRegionManager(world));
     }
 
-    private Optional<ApplicableRegionSet> getApplicableRegions(@NonNull Location location) {
+    private Optional<ApplicableRegionSet> getApplicableRegions(Location location) {
         return getWorldManager(Objects.requireNonNull(location.getWorld()))
                 .map(manager -> manager.getApplicableRegions(location));
     }
 
-    private Optional<ApplicableRegionSet> getApplicableRegions(@NonNull Location minimum, @NonNull Location maximum) {
+    private Optional<ApplicableRegionSet> getApplicableRegions(Location minimum, Location maximum) {
         return getWorldManager(Objects.requireNonNull(minimum.getWorld()))
                 .map(manager ->
                         manager.getApplicableRegions(
@@ -79,12 +78,12 @@ public class WorldGuardImplementation implements IWorldGuardImplementation {
                 );
     }
 
-    private <V> Optional<V> queryValue(Player player, @NonNull Location location, @NonNull Flag<V> flag) {
+    private <V> Optional<V> queryValue(Player player, Location location, Flag<V> flag) {
         return getApplicableRegions(location)
                 .map(applicableRegions -> applicableRegions.queryValue(wrapPlayer(player).orElse(null), flag));
     }
 
-    private IWrappedRegionSet wrapRegionSet(@NonNull World world, @NonNull ApplicableRegionSet regionSet) {
+    private IWrappedRegionSet wrapRegionSet(World world, ApplicableRegionSet regionSet) {
         return new IWrappedRegionSet() {
 
             @Override
@@ -167,7 +166,7 @@ public class WorldGuardImplementation implements IWorldGuardImplementation {
     }
 
     @Override
-    public <T> Optional<T> queryFlag(Player player, @NonNull Location location, @NonNull IWrappedFlag<T> flag) {
+    public <T> Optional<T> queryFlag(Player player, Location location, IWrappedFlag<T> flag) {
         AbstractWrappedFlag<T> wrappedFlag = (AbstractWrappedFlag<T>) flag;
 
         return queryValue(player, location, wrappedFlag.getHandle()).flatMap(wrappedFlag::fromWGValue);
@@ -206,19 +205,19 @@ public class WorldGuardImplementation implements IWorldGuardImplementation {
     }
 
     @Override
-    public <T> Optional<IWrappedFlag<T>> registerFlag(@NonNull String name, @NonNull Class<T> type, T defaultValue) {
+    public <T> Optional<IWrappedFlag<T>> registerFlag(String name, Class<T> type, T defaultValue) {
         throw new UnsupportedOperationException("Custom flags aren't supported in this version of WorldGuard!");
     }
 
     @Override
-    public Optional<IWrappedRegion> getRegion(@NonNull World world, @NonNull String id) {
+    public Optional<IWrappedRegion> getRegion(World world, String id) {
         return getWorldManager(world)
                 .map(regionManager -> regionManager.getRegion(id))
                 .map(region -> new WrappedRegion(world, region));
     }
 
     @Override
-    public Map<String, IWrappedRegion> getRegions(@NonNull World world) {
+    public Map<String, IWrappedRegion> getRegions(World world) {
         RegionManager regionManager = worldGuardPlugin.getRegionManager(world);
         Map<String, ProtectedRegion> regions = regionManager.getRegions();
 
@@ -229,7 +228,7 @@ public class WorldGuardImplementation implements IWorldGuardImplementation {
     }
 
     @Override
-    public Set<IWrappedRegion> getRegions(@NonNull Location location) {
+    public Set<IWrappedRegion> getRegions(Location location) {
         ApplicableRegionSet regionSet = getApplicableRegions(location).orElse(null);
         Set<IWrappedRegion> set = new HashSet<>();
 
@@ -242,7 +241,7 @@ public class WorldGuardImplementation implements IWorldGuardImplementation {
     }
 
     @Override
-    public Set<IWrappedRegion> getRegions(@NonNull Location minimum, @NonNull Location maximum) {
+    public Set<IWrappedRegion> getRegions(Location minimum, Location maximum) {
         ApplicableRegionSet regionSet = getApplicableRegions(minimum, maximum).orElse(null);
         Set<IWrappedRegion> set = new HashSet<>();
 
@@ -255,13 +254,13 @@ public class WorldGuardImplementation implements IWorldGuardImplementation {
     }
 
     @Override
-    public Optional<IWrappedRegionSet> getRegionSet(@NonNull Location location) {
+    public Optional<IWrappedRegionSet> getRegionSet(Location location) {
         return getApplicableRegions(location)
                 .map(regionSet -> wrapRegionSet(Objects.requireNonNull(location.getWorld()), regionSet));
     }
 
     @Override
-    public Optional<IWrappedRegion> addRegion(@NonNull String id, @NonNull List<Location> points, int minY, int maxY) {
+    public Optional<IWrappedRegion> addRegion(String id, List<Location> points, int minY, int maxY) {
         ProtectedRegion region;
         World world = Objects.requireNonNull(points.get(0).getWorld());
         if (points.size() == 2) {
@@ -289,14 +288,14 @@ public class WorldGuardImplementation implements IWorldGuardImplementation {
     }
 
     @Override
-    public Optional<Set<IWrappedRegion>> removeRegion(@NonNull World world, @NonNull String id) {
+    public Optional<Set<IWrappedRegion>> removeRegion(World world, String id) {
         Optional<Set<ProtectedRegion>> set = getWorldManager(world).map(manager -> manager.removeRegion(id));
         return set.map(protectedRegions -> protectedRegions.stream().map(region -> new WrappedRegion(world, region))
                 .collect(Collectors.toSet()));
     }
 
     @Override
-    public Optional<ISelection> getPlayerSelection(@NonNull Player player) {
+    public Optional<ISelection> getPlayerSelection(Player player) {
         return Optional.ofNullable(worldEditPlugin.getSelection(player))
                 .map(selection -> {
                     if (selection instanceof CuboidSelection) {

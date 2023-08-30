@@ -50,7 +50,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
         <spigot-api.version>1.20.1-R0.1-SNAPSHOT</spigot-api.version>
+            <dir>/workspaces/WorldGuardWrapper/</dir>
+
     </properties>
 
     <repositories>
@@ -86,7 +90,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <dependency>
+            <!-- <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>1.18.28</version>
@@ -103,7 +107,7 @@
                 <artifactId>jsr305</artifactId>
                 <version>3.0.2</version>
                 <scope>provided</scope>
-            </dependency>
+            </dependency> -->
         </dependencies>
     </dependencyManagement>
 
@@ -112,14 +116,14 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
-        </dependency>
+        </dependency> -->
     </dependencies>
 
     <build>
@@ -131,6 +135,25 @@
             </resource>
         </resources>
         <plugins>
+         <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${dir}</outputDirectory>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <finalName>WorldGuardWrapper</finalName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>

@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
-import lombok.experimental.UtilityClass;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
@@ -16,12 +15,11 @@ import org.codemc.worldguardwrapper.implementation.v6.flag.WrappedStatusFlag;
 
 import java.util.Map;
 
-@UtilityClass
 public class WorldGuardFlagUtilities {
 
     // TODO: find a better way to define wrapper mappings and register mappings
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public <T> IWrappedFlag<T> wrap(Flag<?> flag, Class<T> type) {
+    public static <T> IWrappedFlag<T> wrap(Flag<?> flag, Class<T> type) {
         final IWrappedFlag<T> wrappedFlag;
         if (type.equals(WrappedState.class)) {
             wrappedFlag = (IWrappedFlag<T>) new WrappedStatusFlag((Flag<StateFlag.State>) flag);
@@ -48,7 +46,7 @@ public class WorldGuardFlagUtilities {
     }
 
     // Used when the flag's type is not known, so it has to be derived from a sample value's class
-    public IWrappedFlag<?> wrapFixType(Flag<?> flag, Class<?> type) {
+    public static IWrappedFlag<?> wrapFixType(Flag<?> flag, Class<?> type) {
         if (StateFlag.State.class.isAssignableFrom(type)) {
             // StateFlag
             type = WrappedState.class;
@@ -63,29 +61,29 @@ public class WorldGuardFlagUtilities {
         return wrap(flag, type);
     }
 
-    public Map.Entry<IWrappedFlag<?>, Object> wrap(Flag<?> flag, Object value) {
+    public static Map.Entry<IWrappedFlag<?>, Object> wrap(Flag<?> flag, Object value) {
         IWrappedFlag<?> wrappedFlag = wrapFixType(flag, value.getClass());
         //noinspection OptionalGetWithoutIsPresent
         Object wrappedValue = ((AbstractWrappedFlag<?>) wrappedFlag).fromWGValue(value).get(); // value is non-null
         return Maps.immutableEntry(wrappedFlag, wrappedValue);
     }
 
-    public Vector adaptVector(com.sk89q.worldedit.Vector vector) {
+    public static Vector adaptVector(com.sk89q.worldedit.Vector vector) {
         return new Vector(vector.getX(), vector.getY(), vector.getZ());
     }
 
-    public com.sk89q.worldedit.Vector adaptVector(Vector vector) {
+    public static com.sk89q.worldedit.Vector adaptVector(Vector vector) {
         return new com.sk89q.worldedit.Vector(vector.getX(), vector.getY(), vector.getZ());
     }
 
-    public Location adaptLocation(com.sk89q.worldedit.util.Location location) {
+    public static Location adaptLocation(com.sk89q.worldedit.util.Location location) {
         World world = location.getExtent() instanceof BukkitWorld
                 ? ((BukkitWorld) location.getExtent()).getWorld() : null;
 
         return new Location(world, location.getX(), location.getY(), location.getZ());
     }
 
-    public com.sk89q.worldedit.util.Location adaptLocation(Location location) {
+    public static com.sk89q.worldedit.util.Location adaptLocation(Location location) {
         return new com.sk89q.worldedit.util.Location(new BukkitWorld(location.getWorld()),
                 location.getX(), location.getY(), location.getZ());
     }

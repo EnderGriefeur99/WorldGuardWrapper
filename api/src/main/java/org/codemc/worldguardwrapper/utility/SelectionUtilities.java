@@ -1,6 +1,5 @@
 package org.codemc.worldguardwrapper.utility;
 
-import lombok.experimental.UtilityClass;
 import org.bukkit.Location;
 import org.codemc.worldguardwrapper.selection.ICuboidSelection;
 import org.codemc.worldguardwrapper.selection.IPolygonalSelection;
@@ -10,7 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("unused")
-@UtilityClass
 public class SelectionUtilities {
 
     /**
@@ -20,7 +18,7 @@ public class SelectionUtilities {
      * @param second the second point of the cuboid
      * @return the selection
      */
-    public ICuboidSelection createCuboidSelection(Location first, Location second) {
+    public static ICuboidSelection createCuboidSelection(Location first, Location second) {
         Location minimum;
         Location maximum;
         if (first.getBlockY() > second.getBlockY()) {
@@ -51,7 +49,7 @@ public class SelectionUtilities {
      * @param maxY   the maximum Y coordinate of the selection
      * @return the selection
      */
-    public IPolygonalSelection createPolygonalSelection(Collection<Location> points, int minY, int maxY) {
+    public static IPolygonalSelection createPolygonalSelection(Collection<Location> points, int minY, int maxY) {
         return new IPolygonalSelection() {
             @Override
             public Set<Location> getPoints() {

@@ -1,6 +1,5 @@
 package org.codemc.worldguardwrapper.implementation;
 
-import lombok.NonNull;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -43,7 +42,7 @@ public interface IWorldGuardImplementation {
      * @param flag     The flag
      * @return The flag's value
      */
-    <T> Optional<T> queryFlag(Player player, @NonNull Location location, @NonNull IWrappedFlag<T> flag);
+    <T> Optional<T> queryFlag(Player player, Location location, IWrappedFlag<T> flag);
 
     /**
      * Queries all applicable flags for a given player at a given location.
@@ -71,7 +70,7 @@ public interface IWorldGuardImplementation {
      * @param defaultValue the flag default value (if supported by the type), can be null
      * @return The created flag, empty if a name conflict occurred
      */
-    <T> Optional<IWrappedFlag<T>> registerFlag(@NonNull String name, @NonNull Class<T> type, T defaultValue);
+    <T> Optional<IWrappedFlag<T>> registerFlag(String name, Class<T> type, T defaultValue);
 
     /**
      * Registers a flag to WorldGuard's flag registry.
@@ -80,7 +79,7 @@ public interface IWorldGuardImplementation {
      * @param type The flag type
      * @return The created flag, empty if a name conflict occurred
      */
-    default <T> Optional<IWrappedFlag<T>> registerFlag(@NonNull String name, @NonNull Class<T> type) {
+    default <T> Optional<IWrappedFlag<T>> registerFlag(String name, Class<T> type) {
         return registerFlag(name, type, null);
     }
 
@@ -91,7 +90,7 @@ public interface IWorldGuardImplementation {
      * @param id    ID of the region
      * @return The region
      */
-    Optional<IWrappedRegion> getRegion(@NonNull World world, @NonNull String id);
+    Optional<IWrappedRegion> getRegion(World world, String id);
 
     /**
      * Get an unmodifiable map of regions containing the state of the
@@ -103,7 +102,7 @@ public interface IWorldGuardImplementation {
      * @param world The world
      * @return A map of regions
      */
-    Map<String, IWrappedRegion> getRegions(@NonNull World world);
+    Map<String, IWrappedRegion> getRegions(World world);
 
     /**
      * Get a set of regions at the given location.
@@ -111,7 +110,7 @@ public interface IWorldGuardImplementation {
      * @param location The location
      * @return A set of regions
      */
-    Set<IWrappedRegion> getRegions(@NonNull Location location);
+    Set<IWrappedRegion> getRegions(Location location);
 
 
     /**
@@ -121,7 +120,7 @@ public interface IWorldGuardImplementation {
      * @param maximum The maximum location of the area
      * @return A set of regions
      */
-    Set<IWrappedRegion> getRegions(@NonNull Location minimum, @NonNull Location maximum);
+    Set<IWrappedRegion> getRegions(Location minimum, Location maximum);
 
     /**
      * Get the applicable region set at the given location-
@@ -129,7 +128,7 @@ public interface IWorldGuardImplementation {
      * @param location The location
      * @return The region set
      */
-    Optional<IWrappedRegionSet> getRegionSet(@NonNull Location location);
+    Optional<IWrappedRegionSet> getRegionSet(Location location);
 
     /**
      * Add a region. If only two points are given, a cuboid region will be created.
@@ -140,7 +139,7 @@ public interface IWorldGuardImplementation {
      * @param maxY   The maximum y coordinate
      * @return The added region
      */
-    Optional<IWrappedRegion> addRegion(@NonNull String id, @NonNull List<Location> points, int minY, int maxY);
+    Optional<IWrappedRegion> addRegion(String id, List<Location> points, int minY, int maxY);
 
     /**
      * Add a cuboid region.
@@ -151,9 +150,9 @@ public interface IWorldGuardImplementation {
      * @return The added region
      */
     default Optional<IWrappedRegion> addCuboidRegion(
-            @NonNull String id,
-            @NonNull Location point1,
-            @NonNull Location point2
+            String id,
+            Location point1,
+            Location point2
     ) {
         return addRegion(id, Arrays.asList(point1, point2), 0, 0);
     }
@@ -165,7 +164,7 @@ public interface IWorldGuardImplementation {
      * @param selection The selection for the region's volume
      * @return The added region
      */
-    default Optional<IWrappedRegion> addRegion(@NonNull String id, @NonNull ISelection selection) {
+    default Optional<IWrappedRegion> addRegion(String id, ISelection selection) {
         if (selection instanceof ICuboidSelection) {
             ICuboidSelection sel = (ICuboidSelection) selection;
             return addCuboidRegion(id, sel.getMinimumPoint(), sel.getMaximumPoint());
@@ -185,7 +184,7 @@ public interface IWorldGuardImplementation {
      * @param id    The region ID
      * @return A list of removed regions where the first entry is the region specified by {@code id}
      */
-    Optional<Set<IWrappedRegion>> removeRegion(@NonNull World world, @NonNull String id);
+    Optional<Set<IWrappedRegion>> removeRegion(World world, String id);
 
     /**
      * Returns the current selection of the given player.
@@ -193,6 +192,6 @@ public interface IWorldGuardImplementation {
      * @param player The player
      * @return The current player's selection
      */
-    Optional<ISelection> getPlayerSelection(@NonNull Player player);
+    Optional<ISelection> getPlayerSelection(Player player);
 
 }
